@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+            background-image: url(balls-5656795_1920.jpg);
+            background-size: cover;
+            background-repeat: no-repeat;
+            opacity: 0.9;
+            overflow: hidden;
+        }
+
+        canvas {
+            border: 6px solid #fff;
+        }
+
+        span {
+            font-size: 70px;
+            font-family: arial;
+            position: absolute;
+            top: 30vh;
+            left: 8vw;
+
+            border: 2px black solid;
+            background-color: rgba(50, 50, 200, 0.7);
+            padding: 3px;
+        }
+
+        div {
+            position: absolute;
+            top: 20vh;
+            left: 5vw;
+            font-family: arial;
+            font-size: 40px;
+            border: 2px black solid;
+            background-color: rgba(50, 50, 200, 0.7);
+            padding: 3px;
+        }
+
+        .komputer {
+            left: 84vw;
+            background-color: rgba(200, 50, 50, 0.7);
+        }
+
+        .pc {
+            left: 90vw;
+            background-color: rgba(200, 50, 50, 0.7);
+        }
+
+        button {
+            position: absolute;
+            bottom: 5vh;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 2px black solid;
+            background-color: white;
+            font-size: 40px;
+            cursor: pointer;
+        }
+
+        .up,
+        .down {
+            display: none;
+        }
+
+        @media (orientation: portrait) {
+            body {
+                display: none;
+            }
+        }
+
+        @media (orientation: landscape) and (max-width: 840px) {
+
+
+            canvas {
+                width: 70vw;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                border: 2px solid #fff;
+            }
+
+            div {
+                display: none;
+            }
+
+            span {
+                font-size: 40px;
+                top: 10vh;
+                left: 0;
+                /* margin: 0 10px; */
+
+            }
+
+            .pc {
+                left: 93vw;
+            }
+
+            button {
+                font-size: 25px;
+                bottom: 0vh;
+            }
+
+            .up {
+                display: block;
+                position: absolute;
+                left: 3vw;
+                bottom: 30vh;
+                height: 80px;
+                width: 50px;
+                color: black;
+                background-image: url(toppng.com-arrow-up-black-up-arrow-323x700.png);
+                background-size: 75%;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+
+            .down {
+                display: block;
+                left: 3vw;
+                bottom: 0vh;
+                position: absolute;
+                height: 80px;
+                width: 50px;
+                background-image: url(toppng.com-down-arrow-black-arrow-down-323x700.png);
+                background-size: 75%;
+                background-repeat: no-repeat;
+                background-position: center;
+
+            }
+
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="gracz">GRACZ</div>
+    <div class="komputer">KOMPUTER</div>
+    <span class="human">0</span>
+    <span class="pc">0</span>
+    <button>START</button>
+    <button class="up"></button>
+    <button class="down"></button>
+    <canvas></canvas>
+    <script>
+        const up = document.querySelector('.up');
+        const down = document.querySelector('.down');
+        const canvas = document.querySelector('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = 1000;
+        canvas.height = 500;
+
+        const cw = canvas.width;
+        const ch = canvas.height;
+        const ballSize = 20;
+        let ballX = cw / 2 - ballSize / 2;
+        let ballY = ch / 2 - ballSize / 2;
+
+        const paddelHeight = 100;
+        const paddelWidth = 20;
+
+        const playerX = 70;
+        const aiX = 910;
+
+        let playerY = 200;
+        let aiY = 200;
+
+        const lineWidth = 6;
+        const lineHeight = 16;
+
+        let ballSpeedX = 3;
+        let ballSpeedY = 3;
+
+
+
+        // let level = 0;
+
+        const human = document.querySelector('.human');
+        const pc = document.querySelector('.pc');
+        const btn = document.querySelector('button')
+
+        let playerPoints = 0;
+        let aiPoints = 0;
+
+
+
+
+        function player() {
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(playerX, playerY, paddelWidth, paddelHeight);
+            //reakcja na odbicie gracz
+            if (ballX - paddelWidth <= playerX && ballY >= playerY - ballSize && ballY <= playerY + paddelHeight) {
+                ballSpeedX = -ballSpeedX;
+                ballX += 5;
+                speedUp();
+            }
+        }
+
+        function ai() {
+            ctx.fillStyle = 'red';
+            ctx.fillRect(aiX, aiY, paddelWidth, paddelHeight);
+            //reakcja na odbicie ai
+            if (ballX + ballSize >= aiX && ballY <= aiY + paddelHeight && ballY >= aiY - ballSize) {
+                ballSpeedX = -ballSpeedX;
+                ballX -= 5;
+                speedUp();
+            }
+        }
+
+        function ball() {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(ballX, ballY, ballSize, ballSize);
+
+
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+
+            if (ballY <= 0 || ballY + ballSize >= ch) {
+                ballSpeedY = -ballSpeedY;
+                speedUp();
+            }
+            if (ballX <= 0 || ballX + ballSize >= cw) {
+                ballSpeedX = -ballSpeedX;
+                speedUp();
+            }
+        }
+
+        function table() {
+            ctx.fillStyle = '#030';
+            ctx.fillRect(0, 0, cw, ch);
+
+            for (let linePosition = 20; linePosition < ch; linePosition += 30) {
+                ctx.fillStyle = 'gray';
+                ctx.fillRect(cw / 2 - lineWidth / 2, linePosition, lineWidth, lineHeight)
+            }
+        }
+        topCanvas = canvas.offsetTop;
+
+        function playerPosition(e) {
+
+            playerY = e.clientY - topCanvas - paddelHeight / 2;
+            if (playerY >= ch - paddelHeight) {
+                playerY = ch - paddelHeight
+            }
+
+            if (playerY <= 0) {
+                playerY = 0
+            }
+
+            // aiY = playerY;
+        }
+
+
+
+        function playerPosition2() {
+            playerY -= 60;
+
+            if (playerY >= ch - paddelHeight) {
+                playerY = ch - paddelHeight
+            }
+
+            if (playerY <= 0) {
+                playerY = 0
+            }
+        }
+
+        function playerPosition3() {
+            playerY += 60;
+
+            if (playerY >= ch - paddelHeight) {
+                playerY = ch - paddelHeight
+            }
+
+            if (playerY <= 0) {
+                playerY = 0
+            }
+        }
+
+
+
+
+
+        function speedUp() {
+            console.log('przyśpieszam')
+
+            if (ballSpeedX > 0 && ballSpeedX < 16) {
+                ballSpeedX += 1;
+            } else if (ballSpeedX < 0 && ballSpeedX > 16) {
+                ballSpeedX -= 1;
+            }
+            if (ballSpeedY > 0 && ballSpeedY < 16) {
+                ballSpeedX += 1;
+            } else if (ballSpeedY < 0 && ballSpeedY > 16) {
+                ballSpeedY -= 1;
+            }
+
+        }
+
+        function aiPosition() {
+
+            const middlePaddel = aiY + paddelHeight / 2;
+            const middleBall = ballY + ballSize / 2;
+
+            if (ballX > 200) {
+                if (middlePaddel - middleBall > 110) {
+                    aiY -= 15;
+                } else if (middlePaddel - middleBall > 20) {
+                    aiY -= 8;
+                } else if (middlePaddel - middleBall < -110) {
+                    aiY += 15;
+                } else if (middlePaddel - middleBall > -20) {
+                    aiY += 8;
+                } else if (ballX <= 200 && ballX > 50) {
+                    if (middlePaddel - middleBall > 100) {
+                        aiY -= 10
+                    } else if (middlePaddel - middleBall < -100) {
+                        aiY += 10
+                    }
+                }
+            }
+            if (aiY >= ch - paddelHeight) {
+                aiY = ch - paddelHeight
+            }
+            if (aiY <= 0) {
+                aiY = 0
+            }
+
+        }
+
+
+        canvas.addEventListener('mousemove', playerPosition)
+        up.addEventListener('mousedown', playerPosition2)
+        down.addEventListener('mousedown', playerPosition3)
+
+        reset = () => {
+            ballX = cw / 2 - ballSize / 2;
+            ballY = ch / 2 - ballSize / 2;
+            ballSpeedX = 3;
+            ballSpeedY = 3;
+
+        }
+
+        function letsGO() {
+
+            function game() {
+                table();
+                ball();
+                player();
+                ai();
+                aiPosition()
+                if (ballX + ballSize >= cw) {
+                    // alert('Wygrałeś');
+                    clearInterval(playGame);
+                    playGame = setInterval(game, 1000 / 60);
+                    reset();
+                    human.textContent = ++playerPoints;
+
+                    if (playerPoints == 10) {
+                        alert('ZWYCIĘSTWO')
+                        clearInterval(playGame);
+                        aiPoints = 0;
+                        playerPoints = 0;
+                    }
+                } else if (ballX <= 0) {
+                    // alert('Przegrałeś')
+                    clearInterval(playGame);
+                    playGame = setInterval(game, 1000 / 60);
+                    reset();
+                    ballSpeedX = -3;
+                    pc.textContent = ++aiPoints;
+
+                    if (aiPoints == 10) {
+                        alert('PORAŻKA')
+                        clearInterval(playGame);
+                        aiPoints = 0;
+                        playerPoints = 0;
+                    }
+
+                }
+
+            }
+            let playGame = setInterval(game, 1000 / 60)
+            pc.textContent = 0;
+            human.textContent = 0;
+        }
+        btn.addEventListener('click', letsGO)
+    </script>
+</body>
+
+</html>
