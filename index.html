@@ -78,11 +78,39 @@
         .down {
             display: none;
         }
+        .turn {
+            display: none;
+        }
 
         @media (orientation: portrait) {
-            body {
-                display: none;
+           .turn {
+                display: block;
+                height: 100vh;
+                width: 100vw;
+                background-color: white;
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 10;
             }
+
+            .turn img {
+                position: absolute;
+                top: 60%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                height: 200px;
+                width: 200px;
+            }
+
+            .turn p {
+                position: absolute;
+                top: 20%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+            }
+
         }
 
         @media (orientation: landscape) and (max-width: 840px) {
@@ -115,7 +143,7 @@
 
             button {
                 font-size: 25px;
-                bottom: 0vh;
+                bottom: -4vh;
             }
 
             .up {
