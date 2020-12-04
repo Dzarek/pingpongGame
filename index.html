@@ -83,32 +83,8 @@
         }
 
         @media (orientation: portrait) {
-           .turn {
-                display: block;
-                height: 100vh;
-                width: 100vw;
-                background-color: white;
-                position: absolute;
-                top: 0;
-                left: 0;
-                z-index: 10;
-            }
-
-            .turn img {
-                position: absolute;
-                top: 60%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                height: 200px;
-                width: 200px;
-            }
-
-            .turn p {
-                position: absolute;
-                top: 20%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                text-align: center;
+           body {
+               display: none;
             }
 
         }
@@ -143,7 +119,7 @@
 
             button {
                 font-size: 25px;
-                bottom: -4vh;
+                bottom: -10vh;
             }
 
             .up {
@@ -180,10 +156,6 @@
 </head>
 
 <body>
-<div class="turn">
-        <p>OBRÓĆ TELEFON</p>
-        <img src="turn.png" alt="">
-    </div>
     <div class="gracz">GRACZ</div>
     <div class="komputer">KOMPUTER</div>
     <span class="human">0</span>
@@ -435,6 +407,15 @@
             human.textContent = 0;
         }
         btn.addEventListener('click', letsGO)
+        function view() {
+            // if (window.innerHeight > window.innerWidth) {
+            //     alert("OBRÓĆ TELEFON");
+            // }
+            if (window.matchMedia("(orientation: portrait)").matches) {
+                alert("OBRÓĆ TELEFON");
+            }
+        }
+        view()
     </script>
 </body>
 
